@@ -1,0 +1,10 @@
+name: dcs-multiplayer-server
+description: Starts a new multiplayer server for DCS
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: azure-typescript
