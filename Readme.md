@@ -1,13 +1,17 @@
-# Install dependencies
+# Setup instructions
 
+## Install dependencies
+
+```powershell
 choco install azure-cli
 choco install pulumi
+```
 
-# Create a resource group in the Azure UI
+## Create a resource group in the Azure UI
 
 Call it DcsMultiplayerServer. We do this outside of the Pulumi script so we never delete it by accident (it has the hard drive images attached to it).
 
-# Create a storage account in the Azure UI
+## Create a storage account in the Azure UI
 
 Now we have dcsmultiplayerscriptseg as a placeholder in index.ts, replace with yours.
 
@@ -24,7 +28,7 @@ Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $VmName -Force
 
 to it as deleteVm.ps1
 
-# Login to Azure and configure
+## Login to Azure and configure
 
 ```powershell
 az login --use-device-code
@@ -35,7 +39,7 @@ pulumi config set --secret adminPassword "YourPasswordHere123!"
 pulumi up
 ```
 
-# Set up DCS drive for the first time
+## Set up DCS drive for the first time
 
 ```powershell
 $disk = Get-Disk | Where-Object PartitionStyle -eq 'RAW'
@@ -66,15 +70,15 @@ Get-Disk | Where-Object Number -eq $disk.Number | Select-Object Number, Operatio
 Get-Volume | Where-Object DriveLetter -eq $partition.DriveLetter
 ```
 
-# Install DCS server
+## Install DCS server
 
 https://www.digitalcombatsimulator.com/en/downloads/world/server/
 
-# Install SRS
+## Install SRS
 
 http://dcssimpleradio.com/
 
-# Disable firewall
+## Disable firewall
 
 ```powershell
 $rules = @(
@@ -109,7 +113,7 @@ Get-NetFirewallRule | Where-Object {
 } | Select-Object DisplayName, Enabled, Direction, Action | Sort-Object DisplayName
 ```
 
-# Connect DCS and SRS
+## Connect DCS and SRS
 
 Create this as C:\link-srs-to-dcs.ps1
 
@@ -128,7 +132,10 @@ if (Test-Path "F:\DCS World Server\Scripts\Hooks\DCS-SRS-AutoConnectGameGUI.lua"
 }
 ```
 
-# Run SRS
-```powershell
-start-process "F:\DCS-SimpleRadio-Standalone\SR-Server.exe" -WorkingDirectory "F:\DCS-SimpleRadio-Standalone"
-```
+## Save snapshot of the DCS drive and the OS drive
+
+In Azure UI, go to the VM -> settings -> disks -> select disk -> create snapshot.
+
+# Running
+
+Just `pulumi up` and it should work.

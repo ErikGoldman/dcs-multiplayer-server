@@ -231,7 +231,7 @@ const vm = pulumi
     });
 
     const runSrsDcsLink = new azure.compute.VirtualMachineExtension(
-      "connect-srs-to-dcs",
+      "startup-script",
       {
         resourceGroupName,
         type: "CustomScriptExtension",
@@ -239,24 +239,11 @@ const vm = pulumi
         publisher: "Microsoft.Compute",
         settings: {
           fileUris: [], // No external URLs, but can be used if script needs to download resources
-          commandToExecute: `powershell -ExecutionPolicy Unrestricted -File "C:\\link-srs-to-dcs.ps1"`,
+          commandToExecute: `powershell -Command "Start-Process 'F:\\DCS-SimpleRadio-Standalone\\SR-Server.exe' -WorkingDirectory 'F:\\DCS-SimpleRadio-Standalone'; 'C:\\link-srs-to-dcs.ps1'"`,
         },
         vmName: vm.name,
       }
     );
-
-    const runSrsServer = new azure.compute.VirtualMachineExtension("run-srs", {
-      resourceGroupName,
-      type: "CustomScriptExtension",
-      typeHandlerVersion: "1.10",
-      publisher: "Microsoft.Compute",
-      settings: {
-        fileUris: [], // No external URLs, but can be used if script needs to download resources
-        commandToExecute: `start-process "F:\\DCS-SimpleRadio-Standalone\\SR-Server.exe" -WorkingDirectory "F:\\DCS-SimpleRadio-Standalone"`,
-      },
-      vmName: vm.name,
-    });
-
     /*
     const automationAccount = new azure.automation.AutomationAccount(
       "automationAccount",
